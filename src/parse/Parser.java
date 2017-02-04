@@ -305,6 +305,7 @@ public class Parser {
 
 	private void expr_RETURN() {
 		accept();
+		
 		E();
 		write_code(CmdType.SET_RET_VAL, 0, null);
 		write_code(CmdType.RET, 0, null);
@@ -374,7 +375,6 @@ public class Parser {
 		this.code_index = 0;
 		P_block();
 		LinkedList<ByteCode> func_code = this.result;
-		// Parser.printCode(func_code);
 		if (func_code.get(func_code.size() - 1).opcode != CmdType.RET)
 			func_code.add(new ByteCode(CmdType.RET, 0, null));
 		/*
@@ -393,6 +393,10 @@ public class Parser {
 		write_code(CmdType.SET_VAR, var_id, null);
 		write_code(CmdType.POP, 0, null);
 		inFunc = false;
+
+		System.out.println(func);
+		Parser.printCode(func_code);
+		System.out.println();
 	}
 
 	private void expr_actual_arg() {

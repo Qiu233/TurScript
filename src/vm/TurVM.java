@@ -45,6 +45,7 @@ public class TurVM {
 	}
 
 	private void pushState() {
+		ctx.stackSize=stack.size();
 		ctx_stack.push(ctx);
 	}
 
@@ -164,18 +165,13 @@ public class TurVM {
 	public void exec() {
 		// StringBuilder progress = new StringBuilder("");
 		for (; this.ctx.ip < this.ctx.code.length;) {
+			//if(this.ctx.ip==11)
 			if (this.ctx.halt) {
 				if (this.ctx.isFunc)// a function is exited
 				{
 					popState();
 					popn(stack.size() - ctx.stackSize);
-					try {
-						stack.push((Varible) ret_val.clone());
-					} catch (CloneNotSupportedException e) {
-						e.printStackTrace();
-						System.out.println("对象复制失败，程序结束......");
-						System.exit(0);
-					}
+					stack.push(new Varible(ret_val.name,ret_val.type,ret_val.value));
 					ret_val = new Varible(null, null, null);
 				} else
 					return;
