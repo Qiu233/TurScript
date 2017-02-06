@@ -158,7 +158,17 @@ public class Parser {
 		int r = 0;
 		while (i.hasNext()) {
 			Constant y = i.next();
-			System.out.println(r + "\t" + y.type.toString() + "\t" + y.value);
+			Object o=y.value;
+			if(y.type==VaribleType.STRING)
+			{
+				String s=(String)o;
+				s=s.replace("\\", "\\\\");
+				s=s.replace("\n","\\n");
+				s=s.replaceAll("\r", "\\r");
+				s=s.replaceAll("\t", "\\t");
+				o="\'"+s+"\'";
+			}
+			System.out.println(r + "\t" + y.type.toString() + "\t" + o);
 			r++;
 		}
 	}
