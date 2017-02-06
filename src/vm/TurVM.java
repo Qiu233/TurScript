@@ -45,7 +45,7 @@ public class TurVM {
 	}
 
 	private void pushState() {
-		ctx.stackSize=stack.size();
+		ctx.stackSize = stack.size();
 		ctx_stack.push(ctx);
 	}
 
@@ -54,52 +54,138 @@ public class TurVM {
 		ctx.ip++;
 		return ctx;
 	}
-
-	private void optr_bin(String f) {
+	 
+	private double optr_bin_num(String f,double a,double b)
+	{
+		switch(f)
+		{
+		case "+":
+			return a+b;
+		case "-":
+			return a-b;
+		case "*":
+			return a*b;
+		case "/":
+			return a/b;
+		}
+		return 0;//no meaning
+	}
+	
+	private boolean optr_bin_bool(String f,boolean a,boolean b)
+	{
+		switch(f)
+		{
+		case "||":
+			return a||b;
+		case "&&":
+			return a&&b;
+		}
+		return false;//no meaning
+	}
+	
+	private boolean optr_bin_cmp_num(String f,double a,double b)
+	{
+		switch(f)
+		{
+		case "==":
+			return a==b;
+		case ">=":
+			return a>=b;
+		case "<=":
+			return a<=b;
+		case ">":
+			return a>b;
+		case "<":
+			return a<b;
+		}
+		return false;//no meaning
+	}
+	
+	private boolean optr_bin_cmp_str(String f,String a,String b)
+	{
+		int r=a.compareTo(b);
+		switch(f)
+		{
+		case "==":if(r==0)return true;
+			break;
+		case ">=":if(r==0||r>0)return true;
+		case "<=":if(r==0||r<0)return true;
+		case ">":if(r>0)return true;
+		case "<":if(r<0)return true;
+		}
+		return false;
+	}
+	
+	
+	private boolean optr_bin_cmp(String f,Object a,Object b)
+	{
+		boolean c = false;
+		if(a instanceof Boolean)if((boolean)a==(boolean)b)return true;
+		switch(f)
+		{
+		case "==":case ">=":case "<=":case ">":case "<":
+			if(a instanceof Double)//the same type for b
+			{
+				c=optr_bin_cmp_num(f,(double)a,(double)b);
+			}
+			else if(a instanceof String)
+			{
+				c=optr_bin_cmp_str(f,(String)a,(String)b);
+			}
+			else if(a instanceof Character)
+			{
+				c=optr_bin_cmp_num(f,(char)a,(char)b);
+			}
+			return c;
+		}
+		return false;//no meaning
+	}
+	
+	private void optr(String f) {
+		if(f.equals("!"))
+		{
+			Varible v=stack.pop();
+			stack.push(new Varible(null, VaribleType.BOOL, !(boolean)v.value));
+			return;
+		}
 		Varible v2 = stack.pop();
 		Varible v1 = stack.pop();
-		if (v2.type != v1.type || v1.type != VaribleType.NUMBER) {
-			if (v2.type == null || v1.type == null) {
-				System.out.println("null不能参与运算");
-				System.exit(0);
+		Object c;
+
+		if(f.equals("+"))
+		{
+			if(v2.type==VaribleType.STRING)
+			{
+				c=v1.value.toString()+(String)v2.value;
+				stack.push(new Varible(null, VaribleType.STRING, c));
+				return;
 			}
-			System.out.println("varibles with " + v2.type.toString() + " and "
-					+ v1.type.toString() + " cannot be operated by " + f);
-			System.exit(0);
+			else if(v1.type==VaribleType.STRING)
+			{
+				c=(String)v1.value+v2.value.toString();
+				stack.push(new Varible(null, VaribleType.STRING, c));
+				return;
+			}
 		}
-		double b = (double) v2.value;
-		double a = (double) v1.value;
-		Object c = 0;
-		switch (f) {
-		case "+":
-			c = a + b;
+		switch(f)
+		{
+		case "+":case "-":case "*":case "/":
+			c=optr_bin_num(f,(double) v1.value,(double) v2.value);
+			stack.push(new Varible(null, VaribleType.NUMBER, c));
 			break;
-		case "-":
-			c = a - b;
+		case "||":case "&&":
+			c=optr_bin_bool(f,(boolean)v1.value,(boolean)v2.value);
+			stack.push(new Varible(null, VaribleType.BOOL, c));
 			break;
-		case "*":
-			c = a * b;
-			break;
-		case "/":
-			c = a / b;
-			break;
-		case "==":
-			c = a == b;
-			break;
-		case ">=":
-			c = a >= b;
-			break;
-		case "<=":
-			c = a <= b;
-			break;
-		case ">":
-			c = a > b;
-			break;
-		case "<":
-			c = a < b;
+		case "==":case ">=":case "<=":case ">":case "<":
+			if(v2.type!=v1.type)
+			{
+				System.out.println("the value with type:"+v1.type+" and "+v2.type+" cannot be operated by operator:"+f);
+			}
+			c=optr_bin_cmp(f,v1.value,v2.value);
+			stack.push(new Varible(null, VaribleType.BOOL, c));
 			break;
 		}
-		stack.push(new Varible(null, VaribleType.NUMBER, c));
 	}
 
 	private void load_Const(int index) {
@@ -165,13 +251,14 @@ public class TurVM {
 	public void exec() {
 		// StringBuilder progress = new StringBuilder("");
 		for (; this.ctx.ip < this.ctx.code.length;) {
-			//if(this.ctx.ip==11)
+			// if(this.ctx.ip==11)
 			if (this.ctx.halt) {
 				if (this.ctx.isFunc)// a function is exited
 				{
 					popState();
 					popn(stack.size() - ctx.stackSize);
-					stack.push(new Varible(ret_val.name,ret_val.type,ret_val.value));
+					stack.push(new Varible(ret_val.name, ret_val.type,
+							ret_val.value));
 					ret_val = new Varible(null, null, null);
 				} else
 					return;
@@ -186,7 +273,7 @@ public class TurVM {
 				popn(cmd.arg);
 				break;
 			case OPTR:
-				optr_bin((String) cmd.extra);
+				optr((String) cmd.extra);
 				break;
 			case LOAD_CONST:
 				load_Const(cmd.arg);
@@ -220,10 +307,10 @@ public class TurVM {
 				this.ctx.halt = true;
 				break;
 			case LOAD_TRUE:
-				stack.push(new Varible(null, null, true));
+				stack.push(new Varible(null, VaribleType.BOOL, true));
 				break;
 			case LOAD_FALSE:
-				stack.push(new Varible(null, null, false));
+				stack.push(new Varible(null, VaribleType.BOOL, false));
 				break;
 			/*
 			 * case LOAD_MARK: stack.push(new Varible(null, VaribleType.MARK,

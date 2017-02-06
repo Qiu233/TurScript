@@ -26,7 +26,7 @@ public class Parser {
 	private int func_local_count = 0;
 	private int a_arg_count = 0;
 	private boolean inFunc = false;
-	public HashMap<String,NativeFunction> nFunc;
+	public HashMap<String, NativeFunction> nFunc;
 
 	public Parser(Lexxer l) {
 		this.result = new LinkedList<ByteCode>();
@@ -35,7 +35,7 @@ public class Parser {
 		this.symtab = new Stack<SymbolTable>();
 		symtab_new();
 		this.jmp_list = new LinkedList<ByteCode>();
-		this.nFunc=new HashMap<String,NativeFunction>();
+		this.nFunc = new HashMap<String, NativeFunction>();
 	}
 
 	public void parse() {
@@ -105,6 +105,7 @@ public class Parser {
 	private void symtab_add(String name, int index) {
 		symtab.peek().add(name, index);
 	}
+
 	private void symtab_add(String name, NativeFunction m) {
 		symtab.peek().add(name);
 		nFunc.put(name, m);
@@ -127,10 +128,9 @@ public class Parser {
 		}
 		return false;
 	}
-	
-	public void registerFunc(String name,Method m)
-	{
-		symtab_add(name, new NativeFunction(m,m.getParameterTypes().length));
+
+	public void registerFunc(String name, Method m) {
+		symtab_add(name, new NativeFunction(m, m.getParameterTypes().length));
 	}
 
 	private int symtab_getLocal_Offset(String name) {
@@ -305,7 +305,7 @@ public class Parser {
 
 	private void expr_RETURN() {
 		accept();
-		
+
 		E();
 		write_code(CmdType.SET_RET_VAL, 0, null);
 		write_code(CmdType.RET, 0, null);
@@ -338,7 +338,7 @@ public class Parser {
 		accept();
 		int tmp = a_arg_count;
 		a_arg_count = 0;
-		if(!match(TokenType.RBRKT))
+		if (!match(TokenType.RBRKT))
 			expr_actual_arg();
 		accept(TokenType.RBRKT);
 		int name_id = getConstant(VaribleType.STRING, name);
@@ -384,8 +384,8 @@ public class Parser {
 		 */
 		this.result = tmp_code;
 		this.code_index = tmp_code_index;
-		ScriptFunction func = new ScriptFunction(func_code.toArray(new ByteCode[func_code
-				.size()]), vc);
+		ScriptFunction func = new ScriptFunction(
+				func_code.toArray(new ByteCode[func_code.size()]), vc);
 		symtab_pop();
 
 		int func_id = getConstant(VaribleType.FUNCTION, func);
@@ -491,8 +491,7 @@ public class Parser {
 		int i = func_local_count;
 		LinkedList<ByteCode> tmp = jmp_list;
 		jmp_list = new LinkedList<ByteCode>();
-		if (inFunc)
-			accept(TokenType.LBBRKT);
+		accept(TokenType.LBBRKT);
 		P();
 		accept(TokenType.RBBRKT);
 		if (inFunc) {
@@ -522,18 +521,58 @@ public class Parser {
 	}
 
 	private void E() {
-		T();
+		D();
 		E1();
 	}
 
 	private void E1() {
+		if(match(TokenType.LOGICAL_AND)||match(TokenType.LOGICAL_OR))
+		{
+			Token t = lex.get();
+			accept();
+			D();
+			write_code(CmdType.OPTR, 0, getSymbolFromType(t.type));
+			E1();
+		}
+	}
+	
+	private void D()
+	{
+		R();
+		D1();
+	}
+	
+	private void D1()
+	{
+		if(match(TokenType.EQUAL) || match(TokenType.MORE_EQUAL)
+				|| match(TokenType.LESS_EQUAL) || match(TokenType.MORE)
+				|| match(TokenType.LESS))
+		{
+			Token t = lex.get();
+			accept();
+			R();
+			write_code(CmdType.OPTR, 0, getSymbolFromType(t.type));
+			D1();
+		}
+	}
+	
+	private void R()
+	{
+		T();
+		R1();
+	}
+	
+	private void R1()
+	{
+
 		if (match(TokenType.PLUS) || match(TokenType.MINUS)) {
 			Token t = lex.get();
 			accept();
 			T();
 			write_code(CmdType.OPTR, 0, getSymbolFromType(t.type));
-			E1();
+			R1();
 		}
+
 	}
 
 	private void T() {
@@ -561,6 +600,14 @@ public class Parser {
 			return ">";
 		case LESS:
 			return "<";
+		case LOGICAL_AND:
+			return "&&";
+		case LOGICAL_OR:
+			return "||";
+		case PPLUS:
+			return "++";
+		case MMINUS:
+			return "--";
 		default:
 			break;
 		}
@@ -568,10 +615,7 @@ public class Parser {
 	}
 
 	private void T1() {
-		if (match(TokenType.MULTI) || match(TokenType.DIV)
-				|| match(TokenType.EQUAL) || match(TokenType.MORE_EQUAL)
-				|| match(TokenType.LESS_EQUAL) || match(TokenType.MORE)
-				|| match(TokenType.LESS)) {
+		if (match(TokenType.MULTI) || match(TokenType.DIV)) {
 			Token t = lex.get();
 			accept();
 			F();

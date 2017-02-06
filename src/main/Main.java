@@ -37,8 +37,5 @@ public class Main {
 		TurVM vm = new TurVM(p);
 		vm.printInfo();
 		vm.exec();
-		// System.out.println(vm.getResult());
-		System.out.println();
-		System.out.println("aµÄÖµÊÇ:" + vm.getVarible("a"));
 	}
 }

@@ -5,4 +5,5 @@ public enum VaribleType {
 	CHAR,
 	STRING,
 	FUNCTION,
+	BOOL,
 }

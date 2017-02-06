@@ -197,6 +197,7 @@ public class Lexxer {
 					tok.value = "++";
 					tok.type = TokenType.PPLUS;
 					i += 2;
+					break;
 				}
 				tok.value = "+";
 				tok.type = TokenType.PLUS;
@@ -208,6 +209,7 @@ public class Lexxer {
 					tok.value = "--";
 					tok.type = TokenType.MMINUS;
 					i += 2;
+					break;
 				}
 				tok.value = "-";
 				tok.type = TokenType.MINUS;
@@ -310,12 +312,26 @@ public class Lexxer {
 				}
 				break;
 			case '|':
-				tok.value = "|";
-				tok.type = TokenType.OR;
+				tok.value = "&";
+				if (code[i + 1] == '|')
+				{
+					tok.value = "||";
+					tok.type = TokenType.LOGICAL_OR;
+					i += 2;
+					break;
+				}
+				tok.type = TokenType.LOGICAL_OR;
 				++i;
 				break;
 			case '&':
 				tok.value = "&";
+				if (code[i + 1] == '&')
+				{
+					tok.value = "&&";
+					tok.type = TokenType.LOGICAL_AND;
+					i += 2;
+					break;
+				}
 				tok.type = TokenType.AND;
 				++i;
 				break;

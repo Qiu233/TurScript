@@ -33,6 +33,8 @@ public enum TokenType {
 	OR,			//|
 	AND,		//&
 	NOT,		//!
+	LOGICAL_AND,
+	LOGICAL_OR,
 
 	LBRKT,
 	RBRKT,
