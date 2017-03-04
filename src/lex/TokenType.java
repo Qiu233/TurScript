@@ -1,4 +1,4 @@
-package lex;
+﻿package lex;
 
 public enum TokenType {
 	UNKNOWN,

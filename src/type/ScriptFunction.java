@@ -1,4 +1,4 @@
-package type;
+﻿package type;
 
 import vm.ByteCode;
 

@@ -1,4 +1,4 @@
-package parse;
+锘縫ackage parse;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -302,7 +302,7 @@ public class Parser {
 			P();
 		} else if (match(TokenType.FUNC)) {
 			if (inFunc) {
-				System.out.println("函数内部不允许定义函数[" + lex.get().line + "]");
+				System.out.println("鍑芥暟鍐呴儴涓嶅厑璁稿畾涔夊嚱鏁癧" + lex.get().line + "]");
 				System.exit(0);
 			}
 			expr_FUNC();
@@ -530,6 +530,49 @@ public class Parser {
 		}
 	}
 
+	/*
+	E-> DE'
+	E'->"&&"DE'|"||"DE'|e
+	D->RD'
+	D'->"=="RD'|">="RD'|"<="RD'|">"RD'|"<"RD'|e
+	R->TR'
+	R'->+TR'|-TR'|e
+	T->FT'
+	T'->*FT'|/FT'|e
+	F->(E)|-F|IDEN|const
+	
+	c+c*c-c
+	
+	E						c+c*c-c
+	E'D						c+c*c-c
+	E'D'R					c+c*c-c
+	E'D'R'T					c+c*c-c
+	E'D'R'T'F				c+c*c-c
+	E'D'R'T'const			c+c*c-c
+	E'D'R'T'				+c*c-c
+	E'D'R'					+c*c-c
+	E'D'R'T+				+c*c-c
+	E'D'R'T					c*c-c
+	E'D'R'T'F				c*c-c
+	E'D'R'T'const			c*c-c
+	E'D'R'T'				*c-c
+	E'D'R'T'F*				*c-c
+	E'D'R'T'F				c-c
+	E'D'R'T'const			c-c
+	E'D'R'T'				-c
+	E'D'R'					-c
+	E'D'R'T-				-c
+	E'D'R'T					c
+	E'D'R'T'F				c
+	E'D'R'T'const			c
+	E'D'R'T'				
+	E'D'R'					
+	E'D'					
+	E'
+	
+	
+	*/
+	
 	private void E() {
 		D();
 		E1();

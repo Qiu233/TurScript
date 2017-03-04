@@ -1,4 +1,4 @@
-package main;
+ï»¿package main;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,10 +15,13 @@ public class Main {
 	{
 		System.out.println(s);
 	}
+	public static double test(double a){
+		return a+20;
+	}
 
 	public static void main(String args[]) throws Exception {
 		/*
-		 * System.out.println("ÇëÊäÈëÎÄ¼þÂ·¾¶");
+		 * System.out.println("è¯·è¾“å…¥æ–‡ä»¶è·¯å¾„");
 		 * 
 		 * @SuppressWarnings("resource") String path = new
 		 * Scanner(System.in).next();
@@ -34,6 +37,7 @@ public class Main {
 		Parser p = new Parser(new Lexxer(str));
 		p.registerFunc("print", Main.class.getMethod("print", Object.class));
 		p.registerFunc("println", Main.class.getMethod("println", Object.class));
+		p.registerFunc("test", Main.class.getMethod("test",new Class[]{double.class}));
 		TurVM vm = new TurVM(p);
 		vm.printInfo();
 		vm.exec();

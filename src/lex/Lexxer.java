@@ -1,4 +1,4 @@
-package lex;
+ï»¿package lex;
 
 import java.util.HashMap;
 import java.util.Stack;
@@ -102,7 +102,7 @@ public class Lexxer {
 		i++;
 		if(i>=code.length&&code[i-1]!='\"')
 		{
-			System.out.println("×Ö·û´®Ã»ÓĞ½áÎ²["+line+"]");
+			System.out.println("å­—ç¬¦ä¸²æ²¡æœ‰ç»“å°¾["+line+"]");
 			System.exit(0);
 		}
 	}
@@ -122,7 +122,7 @@ public class Lexxer {
 		i++;
 		if(i>=code.length)
 		{
-			System.out.println("×Ö·û´®Ã»ÓĞ½áÎ²["+line+"]");
+			System.out.println("å­—ç¬¦ä¸²æ²¡æœ‰ç»“å°¾["+line+"]");
 			System.exit(0);
 		}
 		tok.line=line;
@@ -132,7 +132,7 @@ public class Lexxer {
 		{
 			if(i+1>=code.length)
 			{
-				System.out.println("×Ö·û´®Ã»ÓĞ½áÎ²["+line+"]");
+				System.out.println("å­—ç¬¦ä¸²æ²¡æœ‰ç»“å°¾["+line+"]");
 				System.exit(0);
 			}
 			tok.value=String.valueOf(getSC(code[i+1]));
@@ -144,7 +144,7 @@ public class Lexxer {
 		}
 		if(code[i+1]!='\'')
 		{
-			System.out.println("×Ö·û´®Ã»ÓĞ½áÎ²["+line+"]");
+			System.out.println("å­—ç¬¦ä¸²æ²¡æœ‰ç»“å°¾["+line+"]");
 			System.exit(0);
 		}
 		i+=2;
@@ -234,7 +234,7 @@ public class Lexxer {
 					{
 						if (i + 1 >= code.length)
 						{
-							System.out.println("×¢ÊÍÃ»ÓĞ½áÎ²["+line+"]");
+							System.out.println("æ³¨é‡Šæ²¡æœ‰ç»“å°¾["+line+"]");
 							System.exit(0);
 						}
 						else if (code[i] == '*'&&code[i + 1] == '/')
@@ -353,7 +353,7 @@ public class Lexxer {
 			case '\0':
 				return;
 			default:
-				System.out.println("ÎŞ·¨±æÎö×Ö·û["+line+"]:'"+code[i]+"'");
+				System.out.println("æ— æ³•è¾¨æå­—ç¬¦["+line+"]:'"+code[i]+"'");
 				System.exit(0);
 				break;
 			}

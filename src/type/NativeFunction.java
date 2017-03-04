@@ -1,4 +1,4 @@
-package type;
+﻿package type;
 
 import java.lang.reflect.Method;
 

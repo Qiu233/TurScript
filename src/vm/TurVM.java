@@ -1,4 +1,4 @@
-package vm;
+ï»¿package vm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
@@ -54,135 +54,138 @@ public class TurVM {
 		ctx.ip++;
 		return ctx;
 	}
-	 
-	private double optr_bin_num(String f,double a,double b)
-	{
-		switch(f)
-		{
+
+	private double optr_bin_num(String f, double a, double b) {
+		switch (f) {
 		case "+":
-			return a+b;
+			return a + b;
 		case "-":
-			return a-b;
+			return a - b;
 		case "*":
-			return a*b;
+			return a * b;
 		case "/":
-			return a/b;
+			return a / b;
 		}
-		return 0;//no meaning
+		return 0;// no meaning
 	}
-	
-	private boolean optr_bin_bool(String f,boolean a,boolean b)
-	{
-		switch(f)
-		{
+
+	private boolean optr_bin_bool(String f, boolean a, boolean b) {
+		switch (f) {
 		case "||":
-			return a||b;
+			return a || b;
 		case "&&":
-			return a&&b;
+			return a && b;
 		}
-		return false;//no meaning
+		return false;// no meaning
 	}
-	
-	private boolean optr_bin_cmp_num(String f,double a,double b)
-	{
-		switch(f)
-		{
+
+	private boolean optr_bin_cmp_num(String f, double a, double b) {
+		switch (f) {
 		case "==":
-			return a==b;
+			return a == b;
 		case ">=":
-			return a>=b;
+			return a >= b;
 		case "<=":
-			return a<=b;
+			return a <= b;
 		case ">":
-			return a>b;
+			return a > b;
 		case "<":
-			return a<b;
+			return a < b;
 		}
-		return false;//no meaning
+		return false;// no meaning
 	}
-	
-	private boolean optr_bin_cmp_str(String f,String a,String b)
-	{
-		int r=a.compareTo(b);
-		switch(f)
-		{
-		case "==":if(r==0)return true;
+
+	private boolean optr_bin_cmp_str(String f, String a, String b) {
+		int r = a.compareTo(b);
+		switch (f) {
+		case "==":
+			if (r == 0)
+				return true;
 			break;
-		case ">=":if(r==0||r>0)return true;
-		case "<=":if(r==0||r<0)return true;
-		case ">":if(r>0)return true;
-		case "<":if(r<0)return true;
+		case ">=":
+			if (r == 0 || r > 0)
+				return true;
+		case "<=":
+			if (r == 0 || r < 0)
+				return true;
+		case ">":
+			if (r > 0)
+				return true;
+		case "<":
+			if (r < 0)
+				return true;
 		}
 		return false;
 	}
-	
-	
-	private boolean optr_bin_cmp(String f,Object a,Object b)
-	{
+
+	private boolean optr_bin_cmp(String f, Object a, Object b) {
 		boolean c = false;
-		if(a instanceof Boolean)if((boolean)a==(boolean)b)return true;
-		switch(f)
-		{
-		case "==":case ">=":case "<=":case ">":case "<":
-			if(a instanceof Double)//the same type for b
+		if (a instanceof Boolean)
+			if ((boolean) a == (boolean) b)
+				return true;
+		switch (f) {
+		case "==":
+		case ">=":
+		case "<=":
+		case ">":
+		case "<":
+			if (a instanceof Double)// the same type for b
 			{
-				c=optr_bin_cmp_num(f,(double)a,(double)b);
-			}
-			else if(a instanceof String)
-			{
-				c=optr_bin_cmp_str(f,(String)a,(String)b);
-			}
-			else if(a instanceof Character)
-			{
-				c=optr_bin_cmp_num(f,(char)a,(char)b);
+				c = optr_bin_cmp_num(f, (double) a, (double) b);
+			} else if (a instanceof String) {
+				c = optr_bin_cmp_str(f, (String) a, (String) b);
+			} else if (a instanceof Character) {
+				c = optr_bin_cmp_num(f, (char) a, (char) b);
 			}
 			return c;
 		}
-		return false;//no meaning
+		return false;// no meaning
 	}
-	
+
 	private void optr(String f) {
-		if(f.equals("!"))
-		{
-			Varible v=stack.pop();
-			stack.push(new Varible(null, VaribleType.BOOL, !(boolean)v.value));
+		if (f.equals("!")) {
+			Varible v = stack.pop();
+			stack.push(new Varible(null, VaribleType.BOOL, !(boolean) v.value));
 			return;
 		}
 		Varible v2 = stack.pop();
 		Varible v1 = stack.pop();
 		Object c;
 
-		if(f.equals("+"))
-		{
-			if(v2.type==VaribleType.STRING)
-			{
-				c=v1.value.toString()+(String)v2.value;
+		if (f.equals("+")) {
+			if (v2.type == VaribleType.STRING) {
+				c = v1.value.toString() + (String) v2.value;
 				stack.push(new Varible(null, VaribleType.STRING, c));
 				return;
-			}
-			else if(v1.type==VaribleType.STRING)
-			{
-				c=(String)v1.value+v2.value.toString();
+			} else if (v1.type == VaribleType.STRING) {
+				c = (String) v1.value + v2.value.toString();
 				stack.push(new Varible(null, VaribleType.STRING, c));
 				return;
 			}
 		}
-		switch(f)
-		{
-		case "+":case "-":case "*":case "/":
-			c=optr_bin_num(f,(double) v1.value,(double) v2.value);
+		switch (f) {
+		case "+":
+		case "-":
+		case "*":
+		case "/":
+			c = optr_bin_num(f, (double) v1.value, (double) v2.value);
 			stack.push(new Varible(null, VaribleType.NUMBER, c));
 			break;
-		case "||":case "&&":
-			c=optr_bin_bool(f,(boolean)v1.value,(boolean)v2.value);
+		case "||":
+		case "&&":
+			c = optr_bin_bool(f, (boolean) v1.value, (boolean) v2.value);
 			stack.push(new Varible(null, VaribleType.BOOL, c));
 			break;
-		case "==":case ">=":case "<=":case ">":case "<":
-			if(v2.type!=v1.type)
-			{
-				System.out.println("the value with type:"+v1.type+" and "+v2.type+" cannot be operated by operator:"+f);
+		case "==":
+		case ">=":
+		case "<=":
+		case ">":
+		case "<":
+			if (v2.type != v1.type) {
+				System.out.println("the value with type:" + v1.type + " and "
+						+ v2.type + " cannot be operated by operator:" + f);
 			}
-			c=optr_bin_cmp(f,v1.value,v2.value);
+			c = optr_bin_cmp(f, v1.value, v2.value);
 			stack.push(new Varible(null, VaribleType.BOOL, c));
 			break;
 		}
@@ -319,7 +322,7 @@ public class TurVM {
 			case CALL:
 				Function func = (Function) stack.pop().value;
 				if (func.args_len != cmd.arg) {
-					System.out.println("²ÎÊıÊıÁ¿²»Æ¥Åä" + func.args_len + ","
+					System.out.println("å‚æ•°æ•°é‡ä¸åŒ¹é…" + func.args_len + ","
 							+ cmd.arg);
 				}
 				call(func);
@@ -361,13 +364,32 @@ public class TurVM {
 				args[i] = stack.get(stack.size() - nf.args_len + i).value;
 			}
 			try {
-				((NativeFunction) f).m.invoke(null, args);
+				Object o = ((NativeFunction) f).m.invoke(null, args);
+				if (o != null) {
+					VaribleType t = null;
+					if (o instanceof Double) {
+						t = VaribleType.NUMBER;
+					} else if (o instanceof String) {
+						t = VaribleType.STRING;
+					} else if (o instanceof Character) {
+						t = VaribleType.CHAR;
+					} else if (o instanceof Boolean) {
+						t = VaribleType.BOOL;
+					} else if (o instanceof Function) {
+						t = VaribleType.FUNCTION;
+					} else {
+						System.out.println("unknown returned value type <"
+								+ nf.toString() + ">");
+						System.exit(0);
+					}
+					stack.push(new Varible(null, t, o));
+				}
 			} catch (IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this.ctx.ip++;// ÒòÎªcallÖ¸Áî²¢Ã»ÓĞ¸Ä±äipµÄÖµ£¬µ÷ÓÃ±¾µØº¯Êı²»ĞèÒªÌø×ª£¬ËùÒÔÕâÀïÒª²¹ÉÏipµÄ×ÔÔö£¬·ñÔò»áËÀÑ­»·
+			this.ctx.ip++;// å› ä¸ºcallæŒ‡ä»¤å¹¶æ²¡æœ‰æ”¹å˜ipçš„å€¼ï¼Œè°ƒç”¨æœ¬åœ°å‡½æ•°ä¸éœ€è¦è·³è½¬ï¼Œæ‰€ä»¥è¿™é‡Œè¦è¡¥ä¸Šipçš„è‡ªå¢ï¼Œå¦åˆ™ä¼šæ­»å¾ªç¯
 		}
 	}
 

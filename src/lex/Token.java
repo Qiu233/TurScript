@@ -1,4 +1,4 @@
-package lex;
+﻿package lex;
 
 public class Token {
 	public String value;
