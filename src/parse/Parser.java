@@ -717,7 +717,7 @@ public class Parser {
 		} else if (match(TokenType.TRUE)) {
 			accept();
 			write_code(CmdType.LOAD_TRUE, 0, null);
-		} else if (match(TokenType.TRUE)) {
+		} else if (match(TokenType.FALSE)) {
 			accept();
 			write_code(CmdType.LOAD_FALSE, 0, null);
 		} else {
